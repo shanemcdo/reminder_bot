@@ -8,7 +8,7 @@ bot = commands.Bot(command_prefix='&')
 slash = SlashCommand(bot, sync_commands=True)
 guild_ids = [
         658961897969942529, # test server
-        # 841274945148420106, # timothy server
+        841274945148420106, # timothy server
         ]
 
 lists = {}
