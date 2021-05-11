@@ -1,4 +1,5 @@
 import discord, os
+from asyncio import sleep
 from dotenv import load_dotenv
 from discord.ext import commands, tasks
 from discord_slash import SlashCommand
@@ -75,6 +76,33 @@ async def show(ctx):
         result += f'{i + 1}: {item.strip()}\n'
     result += '```'
     msg = await ctx.send(result)
+
+@slash.slash(
+        name='remindme',
+        description='remind the user in a specified time',
+        guild_ids=guild_ids,
+        )
+async def remindme(ctx, message: str, time: str):
+    await ctx.send('Ok i\'ll remind you')
+    await sleep(convert_time(time))
+    await ctx.send(f'you wanted me to remind you: ```{message}```')
+
+def convert_time(time_string: str) -> int:
+    """Returns time in seconds"""
+    unit = time_string[-1].lower()
+    time = int(time_string[:-1])
+    if unit == 's':
+        return time
+    elif unit == 'm':
+        return time * 60
+    elif unit == 'h':
+        return time * 60 * 60
+    elif unit == 'd':
+        return time * 60 * 60 * 24
+    elif unit == 'w':
+        return time * 60 * 60 * 24 * 7
+    else:
+        raise ValueError(f'{unit} is not a valid unit')
 
 if __name__ == "__main__":
     load_dotenv()
