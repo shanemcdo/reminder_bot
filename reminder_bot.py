@@ -83,14 +83,28 @@ async def show(ctx):
         guild_ids=guild_ids,
         )
 async def remindme(ctx, message: str, time: str):
+    try:
+        converted_time = convert_time(time)
+    except ValueError as e:
+        await ctx.send(f'ValueError: {e}')
+        return
     await ctx.send('Ok i\'ll remind you')
-    await sleep(convert_time(time))
-    await ctx.send(f'you wanted me to remind you: ```{message}```')
+    await sleep(converted_time)
+    await ctx.channel.send(f'{ctx.author.mention}you wanted me to remind you: ```{message}```')
 
 def convert_time(time_string: str) -> int:
     """Returns time in seconds"""
+    try:
+        return float(time_string)
+    except:
+        pass
+    if len(time_string) < 2:
+        raise ValueError(f'\'{time_string}\' is not a valid timestring. e.g. 5h\n\tThe valid units are s, m, h, d, and w')
     unit = time_string[-1].lower()
-    time = int(time_string[:-1])
+    try:
+        time = float(time_string[:-1])
+    except ValueError:
+        raise ValueError(f'\'{time_string}\' is not a valid timestring. e.g. 5h\n\tThe valid units are s, m, h, d, and w')
     if unit == 's':
         return time
     elif unit == 'm':
@@ -102,7 +116,7 @@ def convert_time(time_string: str) -> int:
     elif unit == 'w':
         return time * 60 * 60 * 24 * 7
     else:
-        raise ValueError(f'{unit} is not a valid unit')
+        raise ValueError(f'{unit} is not a valid unit\n\tThe valid units are s, m, h, d, and w')
 
 if __name__ == "__main__":
     load_dotenv()
