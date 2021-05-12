@@ -90,7 +90,7 @@ async def remindme(ctx, message: str, time: str):
         return
     await ctx.send('Ok i\'ll remind you')
     await sleep(converted_time)
-    await ctx.channel.send(f'{ctx.author.mention}you wanted me to remind you: ```{message}```')
+    await ctx.channel.send(f'{ctx.author.mention} you wanted me to remind you: ```{message}```')
 
 def convert_time(time_string: str) -> int:
     """Returns time in seconds"""
