@@ -1,4 +1,4 @@
-import discord, os, datetime
+import discord, os, datetime, json
 from asyncio import sleep
 from dotenv import load_dotenv
 from discord.ext import commands, tasks
@@ -13,6 +13,19 @@ guild_ids = [
         ]
 
 lists = {}
+FILE_NAME = 'data.json'
+
+def save_lists():
+    with open(FILE_NAME, 'w+') as f:
+        json.dump(lists, f)
+
+def load_lists():
+    global lists
+    try:
+        with open(FILE_NAME, 'r') as f:
+            lists = json.load(f)
+    except FileNotFoundError:
+        pass
 
 @bot.event
 async def on_ready():
@@ -36,11 +49,13 @@ async def on_raw_reaction_add(payload):
             ],
         )
 async def add(ctx, items: str):
-    if lists.get(ctx.author) is None:
-        lists[ctx.author] = []
+    auth = str(ctx.author)
+    if lists.get(auth) is None:
+        lists[auth] = []
     for item in items.split(','):
-        lists[ctx.author].append(item.strip())
+        lists[auth].append(item.strip())
     await ctx.send('items added')
+    save_lists()
 
 @slash.slash(
         name="remove",
@@ -56,12 +71,14 @@ async def add(ctx, items: str):
             ],
         )
 async def remove(ctx, indicies: str):
-    if lists.get(ctx.author) is None:
-        lists[ctx.author] = []
+    auth = str(ctx.author)
+    if lists.get(auth) is None:
+        lists[auth] = []
         return
     indicies = list(map(int, indicies.split(',')))
-    lists[ctx.author] = [item for i, item in enumerate(lists[ctx.author]) if i + 1 not in indicies]
+    lists[auth] = [item for i, item in enumerate(lists[auth]) if i + 1 not in indicies]
     await ctx.send('items removed')
+    save_lists()
 
 @slash.slash(
         name='show',
@@ -69,10 +86,11 @@ async def remove(ctx, indicies: str):
         guild_ids=guild_ids,
         )
 async def show(ctx):
-    if lists.get(ctx.author) is None:
-        lists[ctx.author] = []
+    auth = str(ctx.author)
+    if lists.get(auth) is None:
+        lists[auth] = []
     result = '```Heres ur list lol\n'
-    for i, item in enumerate(lists[ctx.author]):
+    for i, item in enumerate(lists[auth]):
         result += f'{i + 1}: {item.strip()}\n'
     result += '```'
     msg = await ctx.send(result)
@@ -143,4 +161,5 @@ def get_secs_till_next(time: datetime.time) -> float:
 
 if __name__ == "__main__":
     load_dotenv()
+    load_lists()
     bot.run(os.environ['TOKEN'])
