@@ -1,4 +1,4 @@
-import discord, os
+import discord, os, datetime
 from asyncio import sleep
 from dotenv import load_dotenv
 from discord.ext import commands, tasks
@@ -92,31 +92,55 @@ async def remindme(ctx, message: str, time: str):
     await sleep(converted_time)
     await ctx.channel.send(f'{ctx.author.mention} you wanted me to remind you: ```{message}```')
 
-def convert_time(time_string: str) -> int:
+def convert_time(time_string: str) -> float:
     """Returns time in seconds"""
-    try:
-        return float(time_string)
-    except:
-        pass
-    if len(time_string) < 2:
-        raise ValueError(f'\'{time_string}\' is not a valid timestring. e.g. 5h\n\tThe valid units are s, m, h, d, and w')
-    unit = time_string[-1].lower()
-    try:
-        time = float(time_string[:-1])
-    except ValueError:
-        raise ValueError(f'\'{time_string}\' is not a valid timestring. e.g. 5h\n\tThe valid units are s, m, h, d, and w')
-    if unit == 's':
+    time, unit = split_num_alpha(time_string)
+    unit = unit.lower()
+    if unit == 's' or unit == 'sec' or unit == 'second' or unit == 'seconds':
         return time
-    elif unit == 'm':
+    elif unit == 'm' or unit == 'min' or unit == 'minute' or unit == 'minutes':
         return time * 60
-    elif unit == 'h':
+    elif unit == 'h' or unit =='hr' or unit == 'hour' or unit == 'hours':
         return time * 60 * 60
-    elif unit == 'd':
+    elif unit == 'd' or unit == 'day' or unit == 'days':
         return time * 60 * 60 * 24
-    elif unit == 'w':
+    elif unit == 'w' or unit == 'week' or unit == 'weeks':
         return time * 60 * 60 * 24 * 7
+    elif unit == 'am' or unit == 'pm':
+        return get_secs_till_next(datetime.time(int(time // 100 + 12 * (unit == 'pm')), int(time % 100)))
     else:
         raise ValueError(f'{unit} is not a valid unit\n\tThe valid units are s, m, h, d, and w')
+
+def split_num_alpha(s: str) -> (float, str):
+    index = -1
+    complete = True
+    for i, ch in enumerate(s):
+        if ch == '.' or ch.isnumeric():
+            index = i
+        else:
+            complete = False
+            break
+    if index == -1:
+        return 0.0, s
+    if complete:
+        return float(s), ''
+    return float(s[:i]), s[i:]
+
+def get_secs_till_next(time: datetime.time) -> float:
+    now = datetime.datetime.today()
+    new = datetime.datetime(
+            now.year,
+            now.month,
+            now.day,
+            time.hour,
+            time.minute,
+            time.second
+            )
+    if new < now:
+        new.replace(day=new.day + 1)
+    delta = new - now
+    print(delta.seconds)
+    return delta.seconds
 
 if __name__ == "__main__":
     load_dotenv()
