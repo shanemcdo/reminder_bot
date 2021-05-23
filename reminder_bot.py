@@ -139,7 +139,6 @@ def get_secs_till_next(time: datetime.time) -> float:
     if new < now:
         new.replace(day=new.day + 1)
     delta = new - now
-    print(delta.seconds)
     return delta.seconds
 
 if __name__ == "__main__":
