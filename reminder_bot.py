@@ -125,7 +125,8 @@ def convert_time(time_string: str) -> float:
     elif unit == 'w' or unit == 'week' or unit == 'weeks':
         return time * 60 * 60 * 24 * 7
     elif unit == 'am' or unit == 'pm':
-        return get_secs_till_next(datetime.time(int(time // 100 + 12 * (unit == 'pm')), int(time % 100)))
+        hr, mn = divmod(time, 100)
+        return get_secs_till_next(datetime.time(int(hr + 12 * ((unit == 'pm') ^ (hr == 12))) % 24, int(mn)))
     else:
         raise ValueError(f'{unit} is not a valid unit\n\tThe valid units are s, m, h, d, and w')
 
