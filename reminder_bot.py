@@ -125,7 +125,7 @@ async def remindmeat(ctx, date: str, time: str, message: str):
     seconds = (dt - datetime.datetime.now()).seconds
     await ctx.send('Ok I\'ll remind you in {seconds}s')
     await sleep(seconds)
-    await ctx.channel.send(f'{ctx.author.mention} you wanted me to remind you: ```{message}```'
+    await ctx.channel.send(f'{ctx.author.mention} you wanted me to remind you: ```{message}```')
 
 def convert_time(time_string: str) -> float:
     """Returns time in seconds"""
