@@ -204,13 +204,17 @@ def parse_datetime(date_string: str, time_string: str) -> datetime.datetime:
     if unit not in ['am', 'pm', '']:
         raise ValueError(f"'{time_string}' is not a valid time string format. Must be in 'hhmm(am/pm)' or 'hhmm' format")
     hr, mn = divmod(time, 100)
-    hr += 12 * ((unit == 'pm') ^ (hr == 12))
+    hr, mn = int(hr), int(mn)
+    if unit == 'am' and hr == 12:
+        hr = 0
+    elif unit == 'pm' and hr != 12:
+        hr += 12
     return datetime.datetime(
         year,
         month,
         day,
-        int(hr % 24),
-        int(mn),
+        hr,
+        mn
     )
 
 if __name__ == "__main__":
