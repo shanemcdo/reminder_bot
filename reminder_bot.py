@@ -197,6 +197,8 @@ def parse_datetime(date_string: str, time_string: str) -> datetime.datetime:
         raise err
     try:
         month, day, year = list(map(int, nums))
+        if year < 100:
+            year += 2000
     except:
         raise err
     # parse time
