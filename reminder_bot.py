@@ -121,7 +121,6 @@ async def remindmeat(ctx, date: str, time: str, message: str):
     except ValueError as e:
         await ctx.send(f'ValueError: {e}')
         return
-    print(dt)
     seconds = (dt - datetime.datetime.now()).seconds
     await ctx.send(f'Ok I\'ll remind you in {seconds}s')
     await sleep(seconds)
