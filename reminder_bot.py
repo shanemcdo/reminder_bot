@@ -110,10 +110,28 @@ async def remindme(ctx, message: str, time: str):
     await sleep(converted_time)
     await ctx.channel.send(f'{ctx.author.mention} you wanted me to remind you: ```{message}```')
 
+@slash.slash(
+        name='remindmeat',
+        description='remind the user in a specified date and time',
+        guild_ids=guild_ids,
+        )
+async def remindmeat(ctx, date: str, time: str, message: str):
+    try:
+        dt = parse_datetime(date, time)
+    except ValueError as e:
+        await ctx.send(f'ValueError: {e}')
+        return
+    print(dt)
+    seconds = (dt - datetime.datetime.now()).seconds
+    await ctx.send('Ok I\'ll remind you in {seconds}s')
+    await sleep(seconds)
+    await ctx.channel.send(f'{ctx.author.mention} you wanted me to remind you: ```{message}```'
+
 def convert_time(time_string: str) -> float:
     """Returns time in seconds"""
     time, unit = split_num_alpha(time_string)
     unit = unit.lower()
+    # TODO use if unit in ['s', 'sec', 'second', 'seconds']:
     if unit == 's' or unit == 'sec' or unit == 'second' or unit == 'seconds':
         return time
     elif unit == 'm' or unit == 'min' or unit == 'minute' or unit == 'minutes':
@@ -159,6 +177,44 @@ def get_secs_till_next(time: datetime.time) -> float:
         new.replace(day=new.day + 1)
     delta = new - now
     return delta.seconds
+
+def parse_datetime(date_string: str, time_string: str) -> datetime.datetime:
+    '''
+    convert a date and time string into a datetime object
+    raises ValueError with invalid arugments
+    :date_string: str, a string in 'mm-dd-yy' format
+        'm-d-yy' format is also valid
+        'yy' can also be replaced with 'yyyy'
+    :time_string: str, a string in 'hhmm(am/pm)' e.g. '1230am'
+        if '(am/pm)' is ommited then it will be assumed to be 24hr format ('hhmm' from '0000' to '2359')
+        case does not matter
+    :returns: datetime.datetime, the constructed datetime object
+    '''
+    # parse date
+    err = ValueError(f"'{date_string}' is not a valid date string format. Must be in 'mm-dd-yy[yy]' or 'm-d-yy[yy]' format")
+    if '-' not in date_string:
+        raise err
+     nums = date_string.split('-')
+    if len(nums) != 3:
+        raise err
+    try:
+        month, day, year = list(map(int, nums))
+    except:
+        raise err
+    # parse time
+    time, unit = split_num_alpha(time_string.lower())
+    if unit not in ['am', 'pm', '']:
+        raise ValueError(f"'{time_string}' is not a valid time string format. Must be in 'hhmm(am/pm)' or 'hhmm' format")
+    hr, mn = divmod(time, 100)
+    hr += 12 * ((unit == 'pm') ^ (hr == 12))
+    hr %= 24
+    return datetime.datetime(
+        year,
+        month,
+        day,
+        hr,
+        mn,
+    )
 
 if __name__ == "__main__":
     load_dotenv()
