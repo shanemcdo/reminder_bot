@@ -126,7 +126,7 @@ async def remindme(ctx, message: str, time: str):
 
 @slash.slash(
         name='remindmeat',
-        description='remind the user in a specified date and time. date format is: \'mm-dd-yyyy\' and time format is: \'hhmm(am\pm)\' or \'hhmm\' which is assumed to be 24hr time',
+        description='remind the user in at a date and time. date fmt: \'mm-dd-yyyy\'. time fmt: \'hhmm(am\pm)\' or \'hhmm\'',
         guild_ids=guild_ids,
         options=[
             create_option(
