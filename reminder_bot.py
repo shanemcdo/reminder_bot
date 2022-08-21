@@ -194,7 +194,7 @@ def parse_datetime(date_string: str, time_string: str) -> datetime.datetime:
     err = ValueError(f"'{date_string}' is not a valid date string format. Must be in 'mm-dd-yy[yy]' or 'm-d-yy[yy]' format")
     if '-' not in date_string:
         raise err
-     nums = date_string.split('-')
+    nums = date_string.split('-')
     if len(nums) != 3:
         raise err
     try:
@@ -207,13 +207,12 @@ def parse_datetime(date_string: str, time_string: str) -> datetime.datetime:
         raise ValueError(f"'{time_string}' is not a valid time string format. Must be in 'hhmm(am/pm)' or 'hhmm' format")
     hr, mn = divmod(time, 100)
     hr += 12 * ((unit == 'pm') ^ (hr == 12))
-    hr %= 24
     return datetime.datetime(
         year,
         month,
         day,
-        hr,
-        mn,
+        hr % 24,
+        int(mn),
     )
 
 if __name__ == "__main__":
