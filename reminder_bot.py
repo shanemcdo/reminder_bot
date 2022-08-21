@@ -131,18 +131,17 @@ def convert_time(time_string: str) -> float:
     """Returns time in seconds"""
     time, unit = split_num_alpha(time_string)
     unit = unit.lower()
-    # TODO use if unit in ['s', 'sec', 'second', 'seconds']:
-    if unit == 's' or unit == 'sec' or unit == 'second' or unit == 'seconds':
+    if unit in ['s', 'sec', 'second', 'seconds']:
         return time
-    elif unit == 'm' or unit == 'min' or unit == 'minute' or unit == 'minutes':
+    elif unit in ['m', 'min', 'minute', 'minutes']:
         return time * 60
-    elif unit == 'h' or unit =='hr' or unit == 'hour' or unit == 'hours':
+    elif unit in ['h', 'hr', 'hour','hours']:
         return time * 60 * 60
-    elif unit == 'd' or unit == 'day' or unit == 'days':
+    elif unit in ['d', 'day', 'days']:
         return time * 60 * 60 * 24
-    elif unit == 'w' or unit == 'week' or unit == 'weeks':
+    elif unit in ['w', 'week', 'weeks']:
         return time * 60 * 60 * 24 * 7
-    elif unit == 'am' or unit == 'pm':
+    elif unit in ['am', 'pm']:
         hr, mn = divmod(time, 100)
         return get_secs_till_next(datetime.time(int(hr + 12 * ((unit == 'pm') ^ (hr == 12))) % 24, int(mn)))
     else:
