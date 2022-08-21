@@ -97,8 +97,22 @@ async def show(ctx):
 
 @slash.slash(
         name='remindme',
-        description='remind the user in a specified time',
+        description='remind the user in a specified time.',
         guild_ids=guild_ids,
+        options=[
+            create_option(
+                name="message",
+                description="The message to be shown as a reminder",
+                option_type=3,
+                required=True,
+                ),
+            create_option(
+                name="time",
+                description="When you want to be reminded. e.g. '10s', '5hr', '1030pm'",
+                option_type=3,
+                required=True,
+                ),
+            ],
         )
 async def remindme(ctx, message: str, time: str):
     try:
@@ -112,8 +126,28 @@ async def remindme(ctx, message: str, time: str):
 
 @slash.slash(
         name='remindmeat',
-        description='remind the user in a specified date and time',
+        description='remind the user in a specified date and time. date format is: \'mm-dd-yyyy\' and time format is: \'hhmm(am\pm)\' or \'hhmm\' which is assumed to be 24hr time',
         guild_ids=guild_ids,
+        options=[
+            create_option(
+                name="date",
+                description="The date you want to be reminded. e.g. '8-10-2022' '3-1-2', '12-30-22'",
+                option_type=3,
+                required=True,
+                ),
+            create_option(
+                name="time",
+                description="The time you want to be reminded. e.g. '1030am', '2145', '115pm'",
+                option_type=3,
+                required=True,
+                ),
+            create_option(
+                name="message",
+                description="The message to be shown as a reminder",
+                option_type=3,
+                required=True,
+                ),
+            ],
         )
 async def remindmeat(ctx, date: str, time: str, message: str):
     try:
@@ -132,9 +166,9 @@ def convert_time(time_string: str) -> float:
     unit = unit.lower()
     if unit in ['s', 'sec', 'second', 'seconds']:
         return time
-    elif unit in ['m', 'min', 'minute', 'minutes']:
+    elif unit in ['m', 'min', 'mins', 'minute', 'minutes']:
         return time * 60
-    elif unit in ['h', 'hr', 'hour','hours']:
+    elif unit in ['h', 'hr', 'hrs', 'hour','hours']:
         return time * 60 * 60
     elif unit in ['d', 'day', 'days']:
         return time * 60 * 60 * 24
