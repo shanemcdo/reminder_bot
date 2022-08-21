@@ -123,7 +123,7 @@ async def remindmeat(ctx, date: str, time: str, message: str):
         return
     print(dt)
     seconds = (dt - datetime.datetime.now()).seconds
-    await ctx.send('Ok I\'ll remind you in {seconds}s')
+    await ctx.send(f'Ok I\'ll remind you in {seconds}s')
     await sleep(seconds)
     await ctx.channel.send(f'{ctx.author.mention} you wanted me to remind you: ```{message}```')
 
@@ -211,7 +211,7 @@ def parse_datetime(date_string: str, time_string: str) -> datetime.datetime:
         year,
         month,
         day,
-        hr % 24,
+        int(hr % 24),
         int(mn),
     )
 
