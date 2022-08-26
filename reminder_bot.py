@@ -155,9 +155,10 @@ async def remindmeat(ctx, date: str, time: str, message: str):
     except ValueError as e:
         await ctx.send(f'ValueError: {e}')
         return
-    seconds = (dt - datetime.datetime.now()).seconds
-    await ctx.send(f'Ok I\'ll remind you in {seconds}s')
-    await sleep(seconds)
+    delta = dt - datetime.datetime.now()
+    print(delta.total_seconds())
+    await ctx.send(f'Ok I\'ll remind you in {delta}')
+    await sleep(delta.total_seconds())
     await ctx.channel.send(f'{ctx.author.mention} you wanted me to remind you: ```{message}```')
 
 def convert_time(time_string: str) -> float:
@@ -175,8 +176,8 @@ def convert_time(time_string: str) -> float:
     elif unit in ['w', 'week', 'weeks']:
         return time * 60 * 60 * 24 * 7
     elif unit in ['am', 'pm']:
-        hr, mn = divmod(time, 100)
-        return get_secs_till_next(datetime.time(int(hr + 12 * ((unit == 'pm') ^ (hr == 12))) % 24, int(mn)))
+        hr, mn = map(int, divmod(time, 100))
+        return get_secs_till_next(datetime.time(to24hr(hr, unit), mn))
     else:
         raise ValueError(f'{unit} is not a valid unit\n\tThe valid units are s, m, h, d, and w')
 
@@ -239,19 +240,58 @@ def parse_datetime(date_string: str, time_string: str) -> datetime.datetime:
     time, unit = split_num_alpha(time_string.lower())
     if unit not in ['am', 'pm', '']:
         raise ValueError(f"'{time_string}' is not a valid time string format. Must be in 'hhmm(am/pm)' or 'hhmm' format")
-    hr, mn = divmod(time, 100)
-    hr, mn = int(hr), int(mn)
-    if unit == 'am' and hr == 12:
-        hr = 0
-    elif unit == 'pm' and hr != 12:
-        hr += 12
+    hr, mn = map(int, divmod(time, 100))
+    if unit != '':
+        hr = to24hr(hr, unit)
     return datetime.datetime(
         year,
         month,
         day,
         hr,
-        mn
+        mn,
     )
+
+def to24hr(hr: int, unit: str) -> int:
+    '''
+    Convert 12hr time to 24hr time
+    12 am -> 0
+    1  am -> 1
+    2  am -> 2
+    3  am -> 3
+    4  am -> 4
+    5  am -> 5
+    6  am -> 6
+    7  am -> 7
+    8  am -> 8
+    9  am -> 9
+    10 am -> 10
+    11 am -> 11
+    12 pm -> 12
+    1  pm -> 13
+    2  pm -> 14
+    3  pm -> 15
+    4  pm -> 16
+    5  pm -> 17
+    6  pm -> 18
+    7  pm -> 19
+    8  pm -> 20
+    9  pm -> 21
+    10 pm -> 22
+    11 pm -> 23
+    :hr: int; the hour in 12hr time
+    :unit: str; 'am' or 'pm'
+    :return: int; the hour in 24hr time
+    '''
+    if hr < 1 or hr > 12:
+        raise ValueError(f'{hr} is not a valid hour for 12hr time')
+    elif unit not in ['am', 'pm']:
+        raise ValueError(f'\'{unit}\' is not valid. expected am or pm')
+    elif unit == 'am' and hr == 12:
+        hr = 0
+    elif unit == 'pm' and hr != 12:
+        hr += 12
+    return hr
+
 
 if __name__ == "__main__":
     load_dotenv()
