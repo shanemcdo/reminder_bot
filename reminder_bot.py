@@ -156,7 +156,6 @@ async def remindmeat(ctx, date: str, time: str, message: str):
         await ctx.send(f'ValueError: {e}')
         return
     delta = dt - datetime.datetime.now()
-    print(delta.total_seconds())
     await ctx.send(f'Ok I\'ll remind you in {delta}')
     await sleep(delta.total_seconds())
     await ctx.channel.send(f'{ctx.author.mention} you wanted me to remind you: ```{message}```')
