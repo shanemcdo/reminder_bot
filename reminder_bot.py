@@ -36,18 +36,18 @@ async def on_raw_reaction_add(payload):
     ...
 
 @slash.slash(
-        name="add",
-        description="Add items to todo list",
-        guild_ids=guild_ids,
-        options=[
-            create_option(
-                name="items",
-                description="Items to include in the todo list in a comma seperated list",
-                option_type=3,
-                required=True,
-                ),
-            ],
-        )
+    name="add",
+    description="Add items to todo list",
+    guild_ids=guild_ids,
+    options=[
+        create_option(
+            name="items",
+            description="Items to include in the todo list in a comma seperated list",
+            option_type=3,
+            required=True,
+        ),
+    ],
+)
 async def add(ctx, items: str):
     auth = str(ctx.author)
     if lists.get(auth) is None:
@@ -58,18 +58,18 @@ async def add(ctx, items: str):
     save_lists()
 
 @slash.slash(
-        name="remove",
-        description="remove items from list",
-        guild_ids=guild_ids,
-        options=[
-            create_option(
-                name="indicies",
-                description="numbers in coma seperated list to be removed from list",
-                option_type=3,
-                required=True,
-                ),
-            ],
-        )
+    name="remove",
+    description="remove items from list",
+    guild_ids=guild_ids,
+    options=[
+        create_option(
+            name="indicies",
+            description="numbers in coma seperated list to be removed from list",
+            option_type=3,
+            required=True,
+        ),
+    ],
+)
 async def remove(ctx, indicies: str):
     auth = str(ctx.author)
     if lists.get(auth) is None:
@@ -81,10 +81,10 @@ async def remove(ctx, indicies: str):
     save_lists()
 
 @slash.slash(
-        name='show',
-        description='Show the todo list',
-        guild_ids=guild_ids,
-        )
+    name='show',
+    description='Show the todo list',
+    guild_ids=guild_ids,
+)
 async def show(ctx):
     auth = str(ctx.author)
     if lists.get(auth) is None:
@@ -96,24 +96,24 @@ async def show(ctx):
     msg = await ctx.send(result)
 
 @slash.slash(
-        name='remindme',
-        description='remind the user in a specified time.',
-        guild_ids=guild_ids,
-        options=[
-            create_option(
-                name="message",
-                description="The message to be shown as a reminder",
-                option_type=3,
-                required=True,
-                ),
-            create_option(
-                name="time",
-                description="When you want to be reminded. e.g. '10s', '5hr', '1030pm'",
-                option_type=3,
-                required=True,
-                ),
-            ],
-        )
+    name='remindme',
+    description='remind the user in a specified time.',
+    guild_ids=guild_ids,
+    options=[
+        create_option(
+            name="message",
+            description="The message to be shown as a reminder",
+            option_type=3,
+            required=True,
+        ),
+        create_option(
+            name="time",
+            description="When you want to be reminded. e.g. '10s', '5hr', '1030pm'",
+            option_type=3,
+            required=True,
+        ),
+    ],
+)
 async def remindme(ctx, message: str, time: str):
     try:
         converted_time = convert_time(time)
@@ -125,30 +125,30 @@ async def remindme(ctx, message: str, time: str):
     await ctx.channel.send(f'{ctx.author.mention} you wanted me to remind you: ```{message}```')
 
 @slash.slash(
-        name='remindmeat',
-        description='remind the user in at a date and time. date fmt: \'mm-dd-yyyy\'. time fmt: \'hhmm(am\pm)\' or \'hhmm\'',
-        guild_ids=guild_ids,
-        options=[
-            create_option(
-                name="date",
-                description="The date you want to be reminded. e.g. '8-10-2022' '3-1-2', '12-30-22'",
-                option_type=3,
-                required=True,
-                ),
-            create_option(
-                name="time",
-                description="The time you want to be reminded. e.g. '1030am', '2145', '115pm'",
-                option_type=3,
-                required=True,
-                ),
-            create_option(
-                name="message",
-                description="The message to be shown as a reminder",
-                option_type=3,
-                required=True,
-                ),
-            ],
-        )
+    name='remindmeat',
+    description='remind the user in at a date and time. date fmt: \'mm-dd-yyyy\'. time fmt: \'hhmm(am\pm)\' or \'hhmm\'',
+    guild_ids=guild_ids,
+    options=[
+        create_option(
+            name="date",
+            description="The date you want to be reminded. e.g. '8-10-2022' '3-1-2', '12-30-22'",
+            option_type=3,
+            required=True,
+        ),
+        create_option(
+            name="time",
+            description="The time you want to be reminded. e.g. '1030am', '2145', '115pm'",
+            option_type=3,
+            required=True,
+        ),
+        create_option(
+            name="message",
+            description="The message to be shown as a reminder",
+            option_type=3,
+            required=True,
+        ),
+    ],
+)
 async def remindmeat(ctx, date: str, time: str, message: str):
     try:
         dt = parse_datetime(date, time)
